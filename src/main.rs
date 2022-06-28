@@ -1,16 +1,16 @@
 use colored::Colorize;
 use std::io;
-use wordle;
+use wordle::{Correctness, Game, Guess, State};
 
 fn main() {
-    let mut game = wordle::Game::new(String::from("hello"));
+    let mut game = Game::new(String::from("hello"));
     println!("{}", "Welcome to RUSTY_WORDLE!".bold());
     println!("You have six attempts to guess a 5 letter word. Just type it in and press ENTER.");
     println!(
         "Correct letters will be shown as {}, misplaced letters as {} and wrong letters as {}.\n",
-        "green".green(),
-        "yellow".yellow(),
-        "crossed out".strikethrough()
+        Guess::format("green", &Correctness::Correct),
+        Guess::format("yellow", &Correctness::Misplaced),
+        Guess::format("crossed out", &Correctness::Wrong)
     );
     loop {
         let mut guess = String::new();
@@ -38,12 +38,12 @@ fn main() {
                     attempts_left,
                     if attempts_left == 1 { "" } else { "s" },
                 );
-                if game.state() == wordle::State::Won {
+                if game.state() == State::Won {
                     println!("Congrats! You've solved this wordle!");
                     break;
                 }
 
-                if game.state() == wordle::State::Lost {
+                if game.state() == State::Lost {
                     println!("Too bad! You've run out of attempts! Try again soon.");
                     break;
                 }
