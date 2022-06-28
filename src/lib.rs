@@ -1,7 +1,4 @@
-use std::{
-    error::Error,
-    fmt::{write, Display},
-};
+use std::fmt::Display;
 
 pub struct Game {
     target: String,
@@ -16,6 +13,10 @@ impl Game {
             state: State::Playing,
             history: vec![],
         }
+    }
+
+    pub fn state(&self) -> State {
+        self.state
     }
 
     pub fn play(&mut self, guess: String) -> Result<&Vec<Guess>, GameError> {
@@ -73,8 +74,8 @@ impl Guess {
     }
 }
 
-#[derive(PartialEq, Eq, Debug)]
-enum State {
+#[derive(PartialEq, Eq, Debug, Clone, Copy)]
+pub enum State {
     Playing,
     Won,
     Lost,
