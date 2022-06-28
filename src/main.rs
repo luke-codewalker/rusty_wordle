@@ -1,9 +1,14 @@
 use colored::Colorize;
+use rand::prelude::*;
 use std::io;
 use wordle::{Correctness, Game, Guess, State};
 
+const DICTIONARY: &str = include_str!("../dictionary.txt");
+
 fn main() {
-    let mut game = Game::new(String::from("hello"));
+    let dictionary: Vec<&str> = DICTIONARY.lines().collect();
+    let dict_idx: usize = thread_rng().gen_range(0..dictionary.len());
+    let mut game = Game::new(String::from(dictionary[dict_idx]));
     println!("{}", "Welcome to RUSTY_WORDLE!".bold());
     println!("You have six attempts to guess a 5 letter word. Just type it in and press ENTER.");
     println!(
