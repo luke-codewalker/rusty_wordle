@@ -1,4 +1,4 @@
-use colored::*;
+use colored::{ColoredString, Colorize};
 use std::fmt::Display;
 
 pub struct Game {
@@ -81,7 +81,7 @@ impl Display for Guess {
             match correct {
                 Correctness::Correct => char.green(),
                 Correctness::Misplaced => char.yellow(),
-                Correctness::Wrong => char.red(),
+                Correctness::Wrong => char.strikethrough(),
             }
         }
         write!(

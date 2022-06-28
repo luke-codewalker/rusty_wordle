@@ -1,9 +1,17 @@
+use colored::Colorize;
 use std::io;
 use wordle;
 
 fn main() {
     let mut game = wordle::Game::new(String::from("hello"));
-    println!("Welcome to rusty Wordle. Try to guess the 5 letter word");
+    println!("{}", "Welcome to RUSTY_WORDLE!".bold());
+    println!("You have six attempts to guess a 5 letter word. Just type it in and press ENTER.");
+    println!(
+        "Correct letters will be shown as {}, misplaced letters as {} and wrong letters as {}.\n",
+        "green".green(),
+        "yellow".yellow(),
+        "crossed out".strikethrough()
+    );
     loop {
         let mut guess = String::new();
         io::stdin()
@@ -13,7 +21,7 @@ fn main() {
         let guess = guess.trim().to_lowercase();
 
         if guess.len() != 5 {
-            println!("Please make a 5 letter guess with the latin characters a-z only");
+            println!("Please make a 5 letter guess with the latin characters a-z only.");
             continue;
         }
 
@@ -23,7 +31,13 @@ fn main() {
                 break;
             }
             Ok(history) => {
-                println!("\rAttempt {}: {}", history.len(), history.last().unwrap());
+                let attempts_left = 6 - history.len();
+                println!(
+                    "{}\t({} attempt{} left)",
+                    history.last().unwrap(),
+                    attempts_left,
+                    if attempts_left == 1 { "" } else { "s" },
+                );
                 if game.state() == wordle::State::Won {
                     println!("Congrats! You've solved this wordle!");
                     break;
