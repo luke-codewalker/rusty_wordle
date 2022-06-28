@@ -1,5 +1,6 @@
 use colored::Colorize;
 use rand::prelude::*;
+use regex::Regex;
 use std::io;
 use wordle::{Correctness, Game, Guess, State};
 
@@ -9,6 +10,7 @@ fn main() {
     let dictionary: Vec<&str> = DICTIONARY.lines().collect();
     let dict_idx: usize = thread_rng().gen_range(0..dictionary.len());
     let mut game = Game::new(String::from(dictionary[dict_idx]));
+
     println!("{}", "Welcome to RUSTY_WORDLE!".bold());
     println!("You have six attempts to guess a 5 letter word. Just type it in and press ENTER.");
     println!(
@@ -17,6 +19,7 @@ fn main() {
         Guess::format("yellow", &Correctness::Misplaced),
         Guess::format("crossed out", &Correctness::Wrong)
     );
+
     loop {
         let mut guess = String::new();
         io::stdin()
@@ -25,8 +28,13 @@ fn main() {
 
         let guess = guess.trim().to_lowercase();
 
-        if guess.len() != 5 {
+        if !Regex::new("^[a-z]{5}$").unwrap().is_match(&guess) {
             println!("Please make a 5 letter guess with the latin characters a-z only.");
+            continue;
+        }
+
+        if !dictionary.contains(&guess.as_str()) {
+            println!("Word not in dictionary, try again.");
             continue;
         }
 
@@ -49,7 +57,7 @@ fn main() {
                 }
 
                 if game.state() == State::Lost {
-                    println!("Too bad! You've run out of attempts! Try again soon.");
+                    println!("Too bad! You've run out of attempts! The target word was '{}'. Try again soon.", game.target());
                     break;
                 }
             }

@@ -20,6 +20,10 @@ impl Game {
         self.state
     }
 
+    pub fn target(&self) -> &str {
+        &self.target
+    }
+
     pub fn play(&mut self, guess: String) -> Result<&Vec<Guess>, GameError> {
         match self.state {
             State::Lost => Err(GameError::GameOver),
