@@ -4,7 +4,7 @@ use regex::Regex;
 use rusty_wordle::{Correctness, Game, Guess, State};
 use std::io;
 
-const DICTIONARY: &str = include_str!("../dictionary.txt");
+const DICTIONARY: &str = include_str!("./dictionary.txt");
 
 fn main() {
     let dictionary: Vec<&str> = DICTIONARY.lines().collect();
