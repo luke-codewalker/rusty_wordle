@@ -1,3 +1,4 @@
+use colored::*;
 use std::fmt::Display;
 
 pub struct Game {
@@ -71,6 +72,27 @@ pub struct Guess {
 impl Guess {
     fn is_winning_guess(result: &[Correctness; 5]) -> bool {
         !result.into_iter().any(|c| *c != Correctness::Correct)
+    }
+}
+
+impl Display for Guess {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        fn format(char: &str, correct: &Correctness) -> ColoredString {
+            match correct {
+                Correctness::Correct => char.green(),
+                Correctness::Misplaced => char.yellow(),
+                Correctness::Wrong => char.red(),
+            }
+        }
+        write!(
+            f,
+            "{}{}{}{}{}",
+            format(&self.word[..1], &self.result[0]),
+            format(&self.word[1..2], &self.result[1]),
+            format(&self.word[2..3], &self.result[2]),
+            format(&self.word[3..4], &self.result[3]),
+            format(&self.word[4..], &self.result[4])
+        )
     }
 }
 

@@ -23,7 +23,7 @@ fn main() {
                 break;
             }
             Ok(history) => {
-                println!("Attempt {}: {:?}", history.len(), history.last().unwrap());
+                println!("\rAttempt {}: {}", history.len(), history.last().unwrap());
                 if game.state() == wordle::State::Won {
                     println!("Congrats! You've solved this wordle!");
                     break;
