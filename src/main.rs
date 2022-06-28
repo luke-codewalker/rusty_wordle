@@ -1,8 +1,8 @@
 use colored::Colorize;
 use rand::prelude::*;
 use regex::Regex;
+use rusty_wordle::{Correctness, Game, Guess, State};
 use std::io;
-use wordle::{Correctness, Game, Guess, State};
 
 const DICTIONARY: &str = include_str!("../dictionary.txt");
 
