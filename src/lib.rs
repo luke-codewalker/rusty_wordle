@@ -1,5 +1,7 @@
 use colored::{ColoredString, Colorize};
 use std::fmt::Display;
+mod correctness;
+pub use crate::correctness::Correctness;
 
 pub struct Game {
     target: String,
@@ -29,7 +31,7 @@ impl Game {
             State::Lost => Err(GameError::GameOver),
             State::Won => Err(GameError::GameWon),
             State::Playing => {
-                let result = evaluate(&self.target, &guess);
+                let result = correctness::evaluate(&self.target, &guess);
                 self.history.push(Guess {
                     word: guess,
                     result,
@@ -106,45 +108,6 @@ pub enum State {
     Playing,
     Won,
     Lost,
-}
-
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
-pub enum Correctness {
-    Correct,
-    Wrong,
-    Misplaced,
-}
-
-fn evaluate(target: &str, guess: &str) -> [Correctness; 5] {
-    assert_eq!(target.len(), 5);
-    assert_eq!(guess.len(), 5);
-
-    let mut result = [Correctness::Wrong; 5];
-    // 0 for each character a - z
-    let mut missing_chars = [0; (b'z' - b'a' + 1) as usize];
-
-    // find all correct guesses and count missing/possibly misplaced target chars
-    for (idx, (g, t)) in guess.bytes().zip(target.bytes()).enumerate() {
-        if g == t {
-            result[idx] = Correctness::Correct;
-        } else {
-            missing_chars[(t - b'a') as usize] += 1;
-        }
-    }
-
-    // check if remaining wrong guesses are actually misplaced
-    for (idx, g) in guess.bytes().enumerate() {
-        if result[idx] == Correctness::Correct {
-            continue;
-        }
-
-        if missing_chars[(g - b'a') as usize] > 0 {
-            result[idx] = Correctness::Misplaced;
-            missing_chars[(g - b'a') as usize] -= 1;
-        }
-    }
-
-    result
 }
 
 #[cfg(test)]
@@ -224,63 +187,64 @@ mod tests {
 
         #[test]
         fn all_correct() {
-            let result = evaluate("world", "world");
+            let result = crate::correctness::evaluate("world", "world");
             assert_eq!(result, [Correctness::Correct; 5]);
         }
 
         #[test]
         fn all_wrong() {
-            let result = evaluate("abcde", "fghij");
+            let result = crate::correctness::evaluate("abcde", "fghij");
             assert_eq!(result, [Correctness::Wrong; 5]);
         }
 
         #[test]
         fn all_misplaced() {
-            let result = evaluate("abcde", "eabcd");
+            let result = crate::correctness::evaluate("abcde", "eabcd");
             assert_eq!(result, [Correctness::Misplaced; 5]);
         }
 
         #[test]
         fn some_wrong_others_correct() {
-            let result = evaluate("abcde", "xbxde");
+            let result = crate::correctness::evaluate("abcde", "xbxde");
             assert_eq!(result, result![W C W C C]);
         }
 
         #[test]
         fn first_two_misplaced_others_correct() {
-            let result = evaluate("abcde", "bacde");
+            let result = crate::correctness::evaluate("abcde", "bacde");
             assert_eq!(result, result![M M C C C]);
         }
 
         #[test]
         fn misplaced_and_correct_once() {
-            let result = evaluate("baabb", "axaxx");
+            let result = crate::correctness::evaluate("baabb", "axaxx");
             assert_eq!(result, result![M W C W W]);
         }
 
         #[test]
         fn same_letter_misplaced_twice() {
-            let result = evaluate("baabb", "axxab");
+            let result = crate::correctness::evaluate("baabb", "axxab");
             assert_eq!(result, result![M W W M C]);
         }
 
         #[test]
         fn wrong_because_already_used() {
-            let result = evaluate("abcde", "aacde");
+            let result = crate::correctness::evaluate("abcde", "aacde");
             assert_eq!(result, result![C W C C C]);
         }
 
         #[test]
         fn wrong_because_used_by_other() {
-            let result = evaluate("babbb", "aaccc");
+            let result = crate::correctness::evaluate("babbb", "aaccc");
             assert_eq!(result, result![W C W W W]);
         }
 
         #[test]
         fn only_accepts_length_five() {
-            let too_short = std::panic::catch_unwind(|| evaluate("a", "abcde"));
+            let too_short = std::panic::catch_unwind(|| crate::correctness::evaluate("a", "abcde"));
             assert!(too_short.is_err());
-            let too_long = std::panic::catch_unwind(|| evaluate("abcde", "abcdef"));
+            let too_long =
+                std::panic::catch_unwind(|| crate::correctness::evaluate("abcde", "abcdef"));
             assert!(too_long.is_err());
         }
     }
