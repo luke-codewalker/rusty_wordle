@@ -2,7 +2,7 @@ use crate::{
     correctness::{self, CorrectnessEvaluationError},
     Guess,
 };
-use std::fmt::Display;
+use std::{error::Error, fmt::Display};
 
 #[derive(Debug)]
 pub struct Game {
@@ -89,6 +89,8 @@ impl From<CorrectnessEvaluationError> for GameError {
         GameError::InvalidArguments
     }
 }
+
+impl Error for GameError {}
 
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
 pub enum State {
