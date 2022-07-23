@@ -10,7 +10,7 @@ pub struct Guess {
 
 impl Guess {
     pub fn is_winning_guess(result: &[Correctness; 5]) -> bool {
-        !result.into_iter().any(|c| *c != Correctness::Correct)
+        result.into_iter().all(|c| *c == Correctness::Correct)
     }
 
     pub fn format(char: &str, correct: &Correctness) -> ColoredString {
