@@ -36,7 +36,8 @@ impl Game {
             State::Lost => Err(GameError::GameOver),
             State::Won => Err(GameError::GameWon),
             State::Playing => {
-                let result = correctness::evaluate(&self.target, &guess);
+                // TODO: better error handling instead of unwrap
+                let result = correctness::evaluate(&self.target, &guess).unwrap();
                 self.history.push(Guess {
                     word: guess,
                     result,
