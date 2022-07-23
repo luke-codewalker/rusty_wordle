@@ -9,7 +9,8 @@ const DICTIONARY: &str = include_str!("./dictionary.txt");
 fn main() {
     let dictionary: Vec<&str> = DICTIONARY.lines().collect();
     let dict_idx: usize = thread_rng().gen_range(0..dictionary.len());
-    let mut game = Game::new(String::from(dictionary[dict_idx]));
+    // TODO: better error handling
+    let mut game = Game::new(String::from(dictionary[dict_idx])).unwrap();
 
     println!("{}", "Welcome to RUSTY_WORDLE!".bold());
     println!("You have six attempts to guess a 5 letter word. Just type it in and press ENTER.");

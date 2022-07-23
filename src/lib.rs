@@ -4,10 +4,13 @@ use std::fmt::Display;
 mod macros;
 
 mod guess;
+use correctness::CorrectnessEvaluationError;
+
 pub use crate::guess::Guess;
 mod correctness;
 pub use crate::correctness::Correctness;
 
+#[derive(Debug)]
 pub struct Game {
     target: String,
     state: State,
@@ -15,12 +18,16 @@ pub struct Game {
 }
 
 impl Game {
-    pub fn new(target: String) -> Self {
-        Game {
+    pub fn new(target: String) -> Result<Self, GameError> {
+        if target.len() != 5 {
+            return Err(GameError::InvalidArguments);
+        }
+
+        Ok(Game {
             target: target,
             state: State::Playing,
             history: vec![],
-        }
+        })
     }
 
     pub fn state(&self) -> State {
@@ -36,8 +43,7 @@ impl Game {
             State::Lost => Err(GameError::GameOver),
             State::Won => Err(GameError::GameWon),
             State::Playing => {
-                // TODO: better error handling instead of unwrap
-                let result = correctness::evaluate(&self.target, &guess).unwrap();
+                let result = correctness::evaluate(&self.target, &guess)?;
                 self.history.push(Guess {
                     word: guess,
                     result,
@@ -59,19 +65,34 @@ impl Game {
 pub enum GameError {
     GameOver,
     GameWon,
+    InvalidArguments,
 }
 
 impl Display for GameError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             GameError::GameOver => {
-                write!(f, "You've lost this game. Start a new one to keep playing.")
+                write!(f, "You've lost this game. Start a new one to keep playing")
             }
-            GameError::GameWon => write!(
+            GameError::GameWon => {
+                write!(
+                    f,
+                    "You've already won this game. Start a new one to play again"
+                )
+            }
+            GameError::InvalidArguments => {
+                write!(
                 f,
-                "You've already won this game. Start a new one to play again."
-            ),
+                "You've passed invalid arguments to this game. Both target and guess need to be 5 letters long"
+            )
+            }
         }
+    }
+}
+
+impl From<CorrectnessEvaluationError> for GameError {
+    fn from(_: CorrectnessEvaluationError) -> Self {
+        GameError::InvalidArguments
     }
 }
 
@@ -88,7 +109,7 @@ mod tests {
 
     #[test]
     fn regular_init_works() {
-        let game = Game::new(String::from("abcde"));
+        let game = Game::new(String::from("abcde")).unwrap();
         assert_eq!(game.state, State::Playing);
         assert_eq!(game.target, String::from("abcde"));
         assert_eq!(game.history.len(), 0);
@@ -117,8 +138,23 @@ mod tests {
     }
 
     #[test]
+    fn incorrect_init_error() {
+        assert_eq!(
+            Game::new(String::from("")).unwrap_err(),
+            GameError::InvalidArguments
+        );
+    }
+
+    #[test]
+    fn incorrect_guess_error() {
+        let mut game = Game::new(String::from("abcde")).unwrap();
+        let result = game.play(String::from("a"));
+        assert_eq!(result.unwrap_err(), GameError::InvalidArguments);
+    }
+
+    #[test]
     fn win_in_first_round() {
-        let mut game = Game::new(String::from("guess"));
+        let mut game = Game::new(String::from("guess")).unwrap();
         let guess = game.play(String::from("guess")).unwrap();
         assert_eq!(guess[0].result, result![C C C C C]);
         assert_eq!(game.state, State::Won);
@@ -126,7 +162,7 @@ mod tests {
 
     #[test]
     fn loose() {
-        let mut game = Game::new(String::from("guess"));
+        let mut game = Game::new(String::from("guess")).unwrap();
         for _ in 0..5 {
             let _ = game.play(String::from("xxxxx")).unwrap();
         }
