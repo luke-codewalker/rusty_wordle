@@ -39,6 +39,7 @@ impl Display for Guess {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::result;
 
     #[test]
     fn is_winning_guess() {

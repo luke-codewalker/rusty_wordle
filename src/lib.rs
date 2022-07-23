@@ -1,14 +1,11 @@
 use std::fmt::Display;
 
-#[macro_use]
-mod macros;
-
 mod guess;
-use correctness::CorrectnessEvaluationError;
-
 pub use crate::guess::Guess;
 mod correctness;
 pub use crate::correctness::Correctness;
+use correctness::CorrectnessEvaluationError;
+mod macros;
 
 #[derive(Debug)]
 pub struct Game {

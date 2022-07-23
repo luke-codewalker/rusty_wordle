@@ -1,5 +1,4 @@
 use std::{error::Error, fmt::Display};
-
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum Correctness {
     Correct,
@@ -54,6 +53,7 @@ pub fn evaluate(target: &str, guess: &str) -> Result<[Correctness; 5], Correctne
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::result;
 
     #[test]
     fn all_correct() {
