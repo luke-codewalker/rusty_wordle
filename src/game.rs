@@ -75,9 +75,9 @@ impl Display for GameError {
             }
             GameError::InvalidArguments => {
                 write!(
-                f,
-                "You've passed invalid arguments to this game. Both target and guess need to be 5 letters long"
-            )
+                    f,
+                    "You've passed invalid arguments to this game. Please only use 5 letters a-z"
+                )
             }
         }
     }
