@@ -1,6 +1,5 @@
 use colored::Colorize;
 use rand::{thread_rng, Rng};
-use regex::Regex;
 use std::error::Error;
 mod guess;
 use std::io;
@@ -10,8 +9,9 @@ mod correctness;
 pub use crate::correctness::Correctness;
 mod game;
 pub use crate::game::{Game, State};
+use crate::utils::validate;
 
-mod macros;
+mod utils;
 
 pub fn run(dictionary: Vec<&str>) -> Result<(), Box<dyn Error>> {
     let random_index: usize = thread_rng().gen_range(0..dictionary.len());
@@ -32,9 +32,12 @@ pub fn run(dictionary: Vec<&str>) -> Result<(), Box<dyn Error>> {
 
         let guess = guess.trim().to_lowercase();
 
-        if !Regex::new("^[a-z]{5}$").unwrap().is_match(&guess) {
-            println!("Please make a 5 letter guess with the latin characters a-z only.");
-            continue;
+        match validate(&guess) {
+            Err(err) => {
+                println!("{}", err);
+                continue;
+            }
+            _ => (),
         }
 
         if !dictionary.contains(&guess.as_str()) {

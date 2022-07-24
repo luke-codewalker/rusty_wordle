@@ -1,5 +1,6 @@
 use crate::{
-    correctness::{self, CorrectnessEvaluationError},
+    correctness,
+    utils::{validate, ValidationError},
     Guess,
 };
 use std::{error::Error, fmt::Display};
@@ -13,9 +14,7 @@ pub struct Game {
 
 impl Game {
     pub fn new(target: String) -> Result<Self, GameError> {
-        if target.len() != 5 {
-            return Err(GameError::InvalidArguments);
-        }
+        validate(&target)?;
 
         Ok(Game {
             target: target,
@@ -84,8 +83,8 @@ impl Display for GameError {
     }
 }
 
-impl From<CorrectnessEvaluationError> for GameError {
-    fn from(_: CorrectnessEvaluationError) -> Self {
+impl From<ValidationError> for GameError {
+    fn from(_: ValidationError) -> Self {
         GameError::InvalidArguments
     }
 }
@@ -126,12 +125,12 @@ mod tests {
 
     #[test]
     fn won_game_throws_error() {
-        let mut lost_game = Game {
+        let mut won_game = Game {
             target: String::from(""),
             state: State::Won,
             history: vec![],
         };
-        let result = lost_game.play(String::from("guess"));
+        let result = won_game.play(String::from("guess"));
         assert_eq!(result.unwrap_err(), GameError::GameWon);
     }
 

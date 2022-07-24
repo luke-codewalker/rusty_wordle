@@ -1,25 +1,15 @@
-use std::{error::Error, fmt::Display};
+use crate::utils::{validate, ValidationError};
+
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum Correctness {
     Correct,
     Wrong,
     Misplaced,
 }
-#[derive(Debug, Clone)]
-pub struct CorrectnessEvaluationError;
 
-impl Display for CorrectnessEvaluationError {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Target or guess with invalid length passed to correctness evaluation. They both need to be of length 5.")
-    }
-}
-
-impl Error for CorrectnessEvaluationError {}
-
-pub fn evaluate(target: &str, guess: &str) -> Result<[Correctness; 5], CorrectnessEvaluationError> {
-    if target.len() != 5 || guess.len() != 5 {
-        return Err(CorrectnessEvaluationError);
-    }
+pub fn evaluate(target: &str, guess: &str) -> Result<[Correctness; 5], ValidationError> {
+    validate(target)?;
+    validate(guess)?;
 
     let mut result = [Correctness::Wrong; 5];
     // 0 for each character a - z
