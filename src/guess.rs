@@ -2,7 +2,7 @@ use crate::correctness::Correctness;
 use colored::{ColoredString, Colorize};
 use std::fmt::Display;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Guess {
     pub word: String,
     pub result: [Correctness; 5],

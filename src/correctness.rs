@@ -7,16 +7,16 @@ pub enum Correctness {
     Misplaced,
 }
 
-pub fn evaluate(target: &str, guess: &str) -> Result<[Correctness; 5], ValidationError> {
+pub fn evaluate(target: &str, word: &str) -> Result<[Correctness; 5], ValidationError> {
     validate(target)?;
-    validate(guess)?;
+    validate(word)?;
 
     let mut result = [Correctness::Wrong; 5];
     // 0 for each character a - z
     let mut unaccounted_target_chars = [0; (b'z' - b'a' + 1) as usize];
 
     // find all correct guesses and count missing/possibly misplaced target chars
-    for (idx, (g, t)) in guess.bytes().zip(target.bytes()).enumerate() {
+    for (idx, (g, t)) in word.bytes().zip(target.bytes()).enumerate() {
         if g == t {
             result[idx] = Correctness::Correct;
         } else {
@@ -25,7 +25,7 @@ pub fn evaluate(target: &str, guess: &str) -> Result<[Correctness; 5], Validatio
     }
 
     // check if remaining wrong guesses are actually misplaced
-    for (idx, g) in guess.bytes().enumerate() {
+    for (idx, g) in word.bytes().enumerate() {
         if result[idx] == Correctness::Correct {
             continue;
         }

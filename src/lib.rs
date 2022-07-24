@@ -27,12 +27,12 @@ pub fn run(dictionary: Vec<&str>) -> Result<(), Box<dyn Error>> {
     );
 
     loop {
-        let mut guess = String::new();
-        io::stdin().read_line(&mut guess)?;
+        let mut word = String::new();
+        io::stdin().read_line(&mut word)?;
 
-        let guess = guess.trim().to_lowercase();
+        let word = word.trim().to_lowercase();
 
-        match validate(&guess) {
+        match validate(&word) {
             Err(err) => {
                 println!("{}", err);
                 continue;
@@ -40,17 +40,17 @@ pub fn run(dictionary: Vec<&str>) -> Result<(), Box<dyn Error>> {
             _ => (),
         }
 
-        if !dictionary.contains(&guess.as_str()) {
+        if !dictionary.contains(&word.as_str()) {
             println!("Word not in dictionary, try again.");
             continue;
         }
 
-        let history = game.play(guess)?;
-        let attempts_left = 6 - history.len();
+        let guess = game.play(word)?;
+        let attempts_left = game.attempts_left();
 
         println!(
             "{}\t({} attempt{} left)",
-            history.last().unwrap(),
+            guess,
             attempts_left,
             if attempts_left == 1 { "" } else { "s" },
         );

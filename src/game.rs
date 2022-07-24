@@ -10,6 +10,7 @@ pub struct Game {
     target: String,
     state: State,
     history: Vec<Guess>,
+    max_attempts: usize,
 }
 
 impl Game {
@@ -20,6 +21,7 @@ impl Game {
             target: target,
             state: State::Playing,
             history: vec![],
+            max_attempts: 6,
         })
     }
 
@@ -31,24 +33,25 @@ impl Game {
         &self.target
     }
 
-    pub fn play(&mut self, guess: String) -> Result<&Vec<Guess>, GameError> {
+    pub fn attempts_left(&self) -> usize {
+        self.max_attempts - self.history.len()
+    }
+
+    pub fn play(&mut self, word: String) -> Result<Guess, GameError> {
         match self.state {
             State::Lost => Err(GameError::GameOver),
             State::Won => Err(GameError::GameWon),
             State::Playing => {
-                let result = correctness::evaluate(&self.target, &guess)?;
-                self.history.push(Guess {
-                    word: guess,
-                    result,
-                });
+                let result = correctness::evaluate(&self.target, &word)?;
+                self.history.push(Guess { word, result });
 
                 if Guess::is_winning_guess(&result) {
                     self.state = State::Won;
-                } else if self.history.len() == 6 {
+                } else if self.history.len() == self.max_attempts {
                     self.state = State::Lost;
                 }
 
-                Ok(&self.history)
+                Ok(self.history.last().unwrap().clone())
             }
         }
     }
@@ -118,6 +121,7 @@ mod tests {
             target: String::from(""),
             state: State::Lost,
             history: vec![],
+            max_attempts: 6,
         };
         let result = lost_game.play(String::from("guess"));
         assert_eq!(result.unwrap_err(), GameError::GameOver);
@@ -129,6 +133,7 @@ mod tests {
             target: String::from(""),
             state: State::Won,
             history: vec![],
+            max_attempts: 6,
         };
         let result = won_game.play(String::from("guess"));
         assert_eq!(result.unwrap_err(), GameError::GameWon);
@@ -153,7 +158,7 @@ mod tests {
     fn win_in_first_round() {
         let mut game = Game::new(String::from("guess")).unwrap();
         let guess = game.play(String::from("guess")).unwrap();
-        assert_eq!(guess[0].result, result![C C C C C]);
+        assert_eq!(guess.result, result![C C C C C]);
         assert_eq!(game.state, State::Won);
     }
 
@@ -164,7 +169,7 @@ mod tests {
             let _ = game.play(String::from("xxxxx")).unwrap();
         }
         let guess = game.play(String::from("xuxxg")).unwrap();
-        assert_eq!(guess[5].result, result![W C W W M]);
+        assert_eq!(guess.result, result![W C W W M]);
         assert_eq!(game.state, State::Lost);
     }
 }
