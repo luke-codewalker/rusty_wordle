@@ -1,18 +1,28 @@
 use colored::Colorize;
 use rand::{thread_rng, Rng};
 use std::error::Error;
-mod guess;
 use std::io;
 
+mod guess;
 pub use crate::guess::Guess;
 mod correctness;
 pub use crate::correctness::Correctness;
 mod game;
-pub use crate::game::{Game, State};
+pub use crate::game::{Game, GameError, State};
+mod utils;
 use crate::utils::validate;
 
-mod utils;
-
+/// Play wordle via the terminal
+///
+/// # Arguments
+///
+/// * `dictionary` - List of 5 letter words from which one will be randomly picked as the target phrase.
+///
+/// # Examples
+///
+/// ```no_run
+/// rusty_wordle::run(vec!["guess", "wordy", "rusty"]);
+/// ```
 pub fn run(dictionary: Vec<&str>) -> Result<(), Box<dyn Error>> {
     let random_index: usize = thread_rng().gen_range(0..dictionary.len());
     let mut game = Game::new(String::from(dictionary[random_index]))?;
