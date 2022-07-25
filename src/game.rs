@@ -5,6 +5,7 @@ use crate::{
 };
 use std::{error::Error, fmt::Display};
 
+/// Struct for holding the logic and state for running a wordle game. Each instance is one round of Wordle for a given target word.
 #[derive(Debug)]
 pub struct Game {
     target: String,
@@ -14,6 +15,11 @@ pub struct Game {
 }
 
 impl Game {
+    /// Construct a new game instance for a given `target` word.
+    ///
+    /// # Arguments
+    ///
+    /// * `target` - a 5 letter word containing only the letters a-z. Other input will throw a [GameError::InvalidArguments]
     pub fn new(target: String) -> Result<Self, GameError> {
         validate(&target)?;
 
@@ -25,18 +31,49 @@ impl Game {
         })
     }
 
+    /// Get the current [State] the game is in.
     pub fn state(&self) -> State {
         self.state
     }
 
+    /// Get a reference to the target word of this game.
     pub fn target(&self) -> &str {
         &self.target
     }
 
+    /// Get the number of attempts the player has left in this game.
     pub fn attempts_left(&self) -> usize {
         self.max_attempts - self.history.len()
     }
 
+    /// Play the game by making a guess at the target word.
+    ///
+    /// # Arguments
+    ///
+    /// * `&mut self`
+    /// * `word` - a 5 letter word, consisting of letters a-z. Other input will throw a [GameError::InvalidArguments]
+    ///
+    ///
+    /// Try to guess the target word by giving the [Game] a `word`. If the word has a valid format and the player has attempts left
+    /// the [Game] will return a [Guess] struct informing the user of the correctness of the guess. If there are no attempts left,
+    /// the game was already won or the input was invalid, `play` will return a [GameError].
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use std::error::Error;
+    /// # fn main() -> Result<(), Box<dyn Error>> {
+    /// let mut game = rusty_wordle::Game::new("guess".to_string())?;
+    /// let guess = game.play("gauss".to_string())?;
+    /// let attempts_left = game.attempts_left();
+    /// println!(
+    ///     "{}\t({} attempts left)",
+    ///     guess,
+    ///     attempts_left,
+    /// );
+    /// # Ok(())
+    /// # }
+    /// ```
     pub fn play(&mut self, word: String) -> Result<Guess, GameError> {
         match self.state {
             State::Lost => Err(GameError::GameOver),
@@ -57,6 +94,7 @@ impl Game {
     }
 }
 
+/// Possible error that can happen when constructing or playing a [Game]
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum GameError {
     GameOver,
@@ -94,6 +132,7 @@ impl From<ValidationError> for GameError {
 
 impl Error for GameError {}
 
+/// The state a [Game] can be in
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
 pub enum State {
     Playing,

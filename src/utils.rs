@@ -3,6 +3,8 @@ use std::{error::Error, fmt::Display};
 use lazy_static::lazy_static;
 use regex::Regex;
 
+/// Only used internally in tests
+#[doc(hidden)]
 #[macro_export]
 macro_rules! result {
     (C) => {

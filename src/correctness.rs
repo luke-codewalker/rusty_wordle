@@ -1,5 +1,21 @@
 use crate::utils::{validate, ValidationError};
 
+/// Enum to describe correctness of each character of a word guessed by a player when compared to a game's target phrase.
+///
+/// # Examples
+///
+/// ```
+/// # use std::error::Error;
+/// use rusty_wordle::{Game, Correctness};
+/// # fn main() -> Result<(), Box<dyn Error>> {
+/// let mut game = Game::new("guess".to_string())?;
+/// let guess = game.play("gauss".to_string())?;
+/// assert_eq!(
+///     guess.result,
+///     [Correctness::Correct, Correctness::Wrong, Correctness::Misplaced, Correctness::Correct, Correctness::Correct]
+/// );
+/// # Ok(())
+/// # }
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum Correctness {
     Correct,
