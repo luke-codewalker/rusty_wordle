@@ -1,6 +1,6 @@
 [package]
 name = "rusty_wordle"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 stormlicense = "MIT OR Apache-2.0"
 description = "Play Worlde in the terminal"
