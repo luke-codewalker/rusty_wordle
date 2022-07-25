@@ -1,7 +1,9 @@
 [package]
 name = "rusty_wordle"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
+license = "MIT OR Apache-2.0"
+description = "Play Worlde in the terminal"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
