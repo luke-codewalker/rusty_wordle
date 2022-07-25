@@ -2,7 +2,7 @@
 name = "rusty_wordle"
 version = "1.0.1"
 edition = "2021"
-stormlicense = "MIT OR Apache-2.0"
+license = "MIT OR Apache-2.0"
 description = "Play Worlde in the terminal"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
