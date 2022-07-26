@@ -4,6 +4,8 @@ version = "1.0.2"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 description = "Play Worlde in the terminal"
+repository = "https://github.com/luke-codewalker/rusty_wordle"
+documentation = "https://docs.rs/rusty_wordle/"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
