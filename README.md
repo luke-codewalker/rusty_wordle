@@ -13,3 +13,7 @@ Open a terminal and type
 rusty_wordle
 ```
 and then follow the instructions.
+
+## Docs
+
+Checkout https://docs.rs/rusty_wordle/ if you're interested in the internal workings or want to know how you can integrate `rusty_wordle` as a library into your own code.
